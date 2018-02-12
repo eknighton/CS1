@@ -6,20 +6,20 @@
 
 using namespace std;
 
-char* tweetIn(ifstream&, ifstream&);
+char* tweetIn(fstream&, fstream&);
 
-int checkWord(char* word, ifstream&reference){
+int checkWord(char* word, fstream& reference){ //Used to see
     char c[141];
     char n[20];
     char indicator;
     int results = 0;
-    reference.get(indicator);
-    if (strcmp(word, tweetIn(reference, reference)) == 0){
-       results+=(int)indicator;
+    reference.get(indicator); //Takes next symbol from file, expecting and assuming it is the 0-4 sentiment value
+    if (strcmp(word, tweetIn(reference, reference)) == 0){ //Assumes that after 3 commas it will find a single word then an end line
+       results+=(int)indicator; //If the word is the tweet, this operation will add the sentiment value associated with it.
     }
     return results;
 }
-int checkTweet(char* tweet, ifstream& sample, ifstream& reference){
+int checkTweet(char* tweet, fstream& sample, fstream& reference){
     int result;
     char c[140];
     char* word;
@@ -36,12 +36,12 @@ int checkTweet(char* tweet, ifstream& sample, ifstream& reference){
     return result;
 }
 
-char* tweetIn(ifstream& data, ifstream& ratings){
+char* tweetIn(fstream& data, fstream& ratings){
     char c[141];
     char n[20];
     char c2;
     DSString result;
-        for (int i = 1; i < 20; i++){//Loop finds sentiment indicator
+        for (int i = 1; i < 20; i++){//Loop finds sentiment indicator,
             ratings.get(c2);
             if(c2==','){
                 ratings.get(c2);
@@ -49,6 +49,9 @@ char* tweetIn(ifstream& data, ifstream& ratings){
                 i = 20;
             }
         }
+        for (int i = 0; i < 10; i++){//Moves cursor past tweet ID
+            ratings.get(c2);
+        }//Cursor is now at endline character
         for (int i = 0; i < 20; i++){ //Iterates to first comma
            data.get(n[i]);
 
@@ -80,29 +83,37 @@ char* tweetIn(ifstream& data, ifstream& ratings){
     return c;
 }
 
-int train(char* const argv[]){
-    ifstream data(argv[2]);
-    ifstream ratings(argv[3]);
-    if(!data||!ratings){
+int train(char* const argv[]){// TRAINER OP
+    fstream data(argv[2]);
+    fstream target(argv[3]);
+    if(!data||!target){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
     cerr << "Training!" << endl;
+    tweetIn(data, target);
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
-        tweetIn(data, ratings);
+        target << ',' << a << (tweetIn(data, target)); //Writes cstring to target file
+        target.write((tweetIn(data, target)),100);
     }
     return 0;
 }
-int test(char* const argv[]){
-    ifstream sample(argv[2]);
-    ifstream records(argv[3]);
+int test(char* const argv[]){// TESTER OP
+    fstream sample(argv[2]);
+    fstream records(argv[3]);
+    fstream target(argv[4]);
     if(!sample||!records){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
-      cerr << "Testing!" << endl;
+    cerr << "Testing!" << endl;
+
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
-        cerr << checkTweet(tweetIn(sample, records), sample, records);
+        if (checkTweet(tweetIn(sample, records), sample, records) > 2){
+            target << '\t' << ' ' << '4';
+        }else{
+            target << '\t' << ' ' << '4';
+        }
         //Iterates through the the lines in the train target, counting positive, negatives
     }
 
@@ -114,14 +125,18 @@ int main(int argc,  char* const argv[])
 {
     cerr << "Starting! "<< argc << " argument(s)!" <<endl;
     if (argc < 4){
-        cerr << "-r/-c and two files required" << endl;
+        cerr << "-r/-c and <subject> <target> required" << endl;
         return 0;
     }
     else if (strcmp(argv[1], "-r")==0){
-        cerr << "Training!" << endl;
+        cerr << "Training mode!" << endl;
         return train(argv); //Calls training op
     }else if(strcmp(argv[1], "-c")==0){
-        cerr << "Testing!" << endl;
+         cerr << "Testing mode!" << endl;
+         if (argc < 5){
+             cerr << "In testing mode, <subject> <reference> <target> required!"<<endl;
+         }
+
         return test(argv); //Calls testing op
     }
     cerr << "Invalid arg: Use -r to train, -c to test." << endl;
