@@ -20,6 +20,33 @@ DSString::~DSString(){
     chars = nullptr;
     delete[] chars;
 }
+DSString& DSString::operator= (const char* cstring){
+    strcpy(chars, cstring);
+    return *this;
+}
+/*
+DSString& DSString::operator= (const DSString& DSString){
+    return &DSString(DSString);
+}
+
+DSString DSString::operator+ (const DSString& DSString){
+    return strcat(chars, DSString.chars);
+}
+
+bool DSString::operator== (const char* cstring){
+    return strcomp(chars, cstring);
+}
+bool DSString::operator== (const DSString& DSString){
+    return strcomp(chars, DSString.chars);
+}
+
+bool DSString::operator> (const DSString& DSString){
+    return
+}
+
+char& operator[] (const int);
+*/
+
 
 //Avoid passing vectors, or large objects by value
 
