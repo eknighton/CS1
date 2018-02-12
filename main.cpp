@@ -1,36 +1,25 @@
 #include <iostream>
 #include <fstream>
 #include <readerfunctions.cpp>
-
+#include <cstring>
+#include "dsstring.h"
 
 using namespace std;
 
+DSString tweetIn(){
 
+}
 
-int main(int argc,  char* argv[])
-{
-    cerr << "Starting! "<< argc << " argument(s)!" <<endl;
-    if (argc < 4){
-        cerr << "-r/-c and two files required" << endl;
-        return 0;
-    }
-    else if (*argv[1] == '-r'){
-        return 0;
-    }else if(*argv[1] != '-c'){
-        cerr << "Invalid arg: Use -r to train, -c to test." << endl;
-        cerr << "You input: "<< argv[1] << endl;
-        return 0;
-    }
+int train(char* const argv[]){
     ifstream data(argv[2]);
     ifstream ratings(argv[3]);
     if(!data||!ratings){
         cerr << "Files not found!" << endl;
-        return 0;}
+        return 0; }
     cerr << "Files found!" << endl;
     char c[140];
     char n[20];
     char c2;
-
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
         for (int i = 1; i < 20; i++){//Loop finds +/- indicator
             ratings.get(c2);
@@ -64,19 +53,24 @@ int main(int argc,  char* argv[])
             }
         }
     }
+}
 
-
-
-    //What differences matter?
-    //Word content
-    //Word order
-    //
-
-    //
-
+int main(int argc,  char* const argv[])
+{
+    cerr << "Starting! "<< argc << " argument(s)!" <<endl;
+    if (argc < 4){
+        cerr << "-r/-c and two files required" << endl;
+        return 0;
+    }
+    else if (strcmp(argv[1], "r")==0){
+        cerr << "Training!" << endl;
+        return train(argv);
+    }else if(strcmp(argv[1], "-c")==0){
+        cerr << "Testing!" << endl;
+        return train(argv);
+    }
+    cerr << "Invalid arg: Use -r to train, -c to test." << endl;
     return 0;
-
-
 }
 
 

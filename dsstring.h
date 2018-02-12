@@ -8,8 +8,16 @@ private:
     char* chars;
 public:
     DSString();
-    DSString(const DSString& string);
+    DSString(char*);
+    DSString(const DSString&);
     ~DSString();
+    DSString& operator= (const char*);
+    DSString& operator= (const DSString&);
+    DSString operator+ (const DSString&);
+    bool operator== (const char*);
+    bool operator== (const DSString&);
+    bool operator> (const DSString&);
+    char& operator[] (const int);
 
     //Friend function for file stream
     //Rule of three

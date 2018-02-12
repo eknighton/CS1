@@ -1,11 +1,15 @@
 #include "dsstring.h"
+#include <cstring>
 
 DSString::DSString()
 {
   chars = nullptr;
 }
-DSString::DSString(const DSString& string){
-  *string.chars; //Value of string's contents -  but where does it stop, will it just give the first value?
+DSString::DSString(char* cstring){
+    chars = cstring;
+}
+DSString::DSString(const DSString& DSString){
+  *DSString.chars; //Value of string's contents -  but where does it stop, will it just give the first value?
 
 
   //Copy constructor will assign pointer to same location
@@ -16,6 +20,7 @@ DSString::~DSString(){
     chars = nullptr;
     delete[] chars;
 }
+
 //Avoid passing vectors, or large objects by value
 
 
