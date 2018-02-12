@@ -6,26 +6,34 @@
 
 using namespace std;
 
+char* tweetIn(ifstream&, ifstream&);
 
-
-int checkword(char* word, ifstream&reference){
+int checkWord(char* word, ifstream&reference){
     char c[141];
     char n[20];
-    char c2;
-    int multiplier = 0;
+    char indicator;
+    int results = 0;
+    reference.get(indicator);
+    if (strcmp(word, tweetIn(reference, reference)) == 0){
+       results+=(int)indicator;
+    }
+    return results;
 }
-int checktweet(char* tweet, ifstream& reference){
+int checkTweet(char* tweet, ifstream& sample, ifstream& reference){
     int result;
     char c[140];
     char* word;
-    for (int i = 0; i < 140; i++){
-        reference.get(word[i]);
+    for (int i = 0; i < 140; i++){ //"Dumb" iterator
+        sample.get(word[i]);
         if(c[i] == ' ' || c[i] == ',' || c[i] == '.' || c[i] == '?' || c[i] == '!'){
-           result+=checkword(word, reference);
+           result+=checkWord(word, reference);
            word = "";
+           i = 0; //Refresh iteration limit
+        }else if (c[i] == '\n'){
+            i = 140; //End iteration
         }
     }
-
+    return result;
 }
 
 char* tweetIn(ifstream& data, ifstream& ratings){
@@ -37,7 +45,7 @@ char* tweetIn(ifstream& data, ifstream& ratings){
             ratings.get(c2);
             if(c2==','){
                 ratings.get(c2);
-                cerr << c2 << " ";
+                //cerr << c2 << " ";
                 i = 20;
             }
         }
@@ -61,13 +69,13 @@ char* tweetIn(ifstream& data, ifstream& ratings){
         }
         for (int i = 0; i < 141; i++){ //Captures message
             data.get(c[i]);
-            cout << c[i];
+            //cout << c[i];
             if(c[i]=='\n'){
                 c[i+1];
                 i = 141;
             }
         }
-        cerr << "a-ok";
+        //cerr << "a-ok";
         //result = c;
     return c;
 }
@@ -79,20 +87,22 @@ int train(char* const argv[]){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
+    cerr << "Training!" << endl;
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
         tweetIn(data, ratings);
     }
     return 0;
 }
 int test(char* const argv[]){
-    ifstream data(argv[2]);
-    ifstream ratings(argv[3]);
-    if(!data||!ratings){
+    ifstream sample(argv[2]);
+    ifstream records(argv[3]);
+    if(!sample||!records){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
+      cerr << "Testing!" << endl;
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
-        tweetIn(data, ratings);
+        cerr << checkTweet(tweetIn(sample, records), sample, records);
         //Iterates through the the lines in the train target, counting positive, negatives
     }
 
@@ -109,10 +119,10 @@ int main(int argc,  char* const argv[])
     }
     else if (strcmp(argv[1], "-r")==0){
         cerr << "Training!" << endl;
-        return test(argv);
+        return train(argv); //Calls training op
     }else if(strcmp(argv[1], "-c")==0){
         cerr << "Testing!" << endl;
-        return train(argv);
+        return test(argv); //Calls testing op
     }
     cerr << "Invalid arg: Use -r to train, -c to test." << endl;
     return 0;
