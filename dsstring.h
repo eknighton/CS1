@@ -16,6 +16,8 @@ public:
     DSString& operator= (const char*);
     DSString& operator= (const DSString&);
     DSString operator+ (const DSString&);
+    DSString operator+ (const char*);
+    DSString operator+ (const char);
     bool operator== (const char*);
     bool operator== (const DSString&);
     bool operator> (const DSString&);

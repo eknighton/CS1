@@ -6,105 +6,35 @@
 
 using namespace std;
 
-/*char* tweetIn(ifstream&, ofstream&);
-
-int checkWord(char* word, ifstream& reference){ //Used to see
-    char c[141];
-    char n[20];
-    char indicator;
-    int results = 0;
-    reference.get(indicator); //Takes next symbol from file, expecting and assuming it is the 0-4 sentiment value
-    if (strcmp(word, tweetIn(reference, reference)) == 0){ //Assumes that after 3 commas it will find a single word then an end line
-       results+=(int)indicator; //If the word is the tweet, this operation will add the sentiment value associated with it.
-    }
-    return results;
-}
-int checkTweet(char* tweet, ifstream& sample, ofstream& reference){
-    int result;
-    char c[140];
-    char* word;
-    for (int i = 0; i < 140; i++){ //"Dumb" iterator
-        sample.get(word[i]);
-        if(c[i] == ' ' || c[i] == ',' || c[i] == '.' || c[i] == '?' || c[i] == '!'){
-           result+=checkWord(word, reference);
-           word = "";
-           i = 0; //Refresh iteration limit
-        }else if (c[i] == '\n'){
-            i = 140; //End iteration
-        }
-    }
-    return result;
-}
-
-char* tweetIn(ifstream& data, ofstream& ratings){
-    char c[141];
-    char n[20];
-    char c2;
-    DSString result;
-        for (int i = 1; i < 20; i++){//Loop finds sentiment indicator,
-            ratings.get(c2);
-            if(c2==','){
-                ratings.get(c2);
-                //cerr << c2 << " ";
-                i = 20;
-            }
-        }
-        for (int i = 0; i < 10; i++){//Moves cursor past tweet ID
-            ratings.get(c2);
-        }//Cursor is now at endline character
-        for (int i = 0; i < 20; i++){ //Iterates to first comma
-           data.get(n[i]);
-
-           if(n[i]==',')
-               i=20;
-        }
-        for (int i = 0; i < 20; i++){ //Iterates to second comma
-
-           data.get(n[i]);
-           if(n[i]==',')
-               i=20;
-        }
-        for (int i = 0; i < 20; i++){ //Iterates to third comma
-
-           data.get(n[i]);
-           if(n[i]==',' || n[i] == '\n')
-               i=20;
-        }
-        for (int i = 0; i < 141; i++){ //Captures message
-            data.get(c[i]);
-            //cout << c[i];
-            if(c[i]=='\n'){
-                c[i+1];
-                i = 141;
-            }
-        }
-        //cerr << "a-ok";
-        //result = c;
-    return c;
-}*/
 //A to I : pass in a cstring number and it returns an integer
 bool mode;
 int sentiment;
+DSString thisTweet;
 ifstream* subject;
 ofstream* targetw; //Global write to target stream object
 ifstream* targetr;//Global read from target stream object
 ofstream* instructw; //Global write to instructions stream object
 ifstream* instructr; //Global read from instructions stream object
-char* subj{nullptr};
-char* targ{nullptr};
-char* instr{nullptr};
+char* subj{nullptr}; //Global pointer to subject filename
+char* targ{nullptr}; //Global pointer to target filename
+char* instr{nullptr}; //Global pointer to instruction filename
 
 
-void trainWord(DSString word){
-    delete targetr;
-    targetr = new ifstream(targ);
+void trainWord(DSString word){ cerr << word.c_str();
+    delete targetr; targetr = new ifstream(targ);
+    DSString word2;
+
     //Will now iterate though document, locating the word if it occurs.
-    for (int i = 0; i < 10000; i++){
-        //When the word is found, global int sentiment value is added to the int read on its line (-2,-1,1, or 2)
+    for (int i = 0; i < 99999; i++){
+        for (int k = 0; k < 10000; k++){
+            if (word == word2){
 
+            }
+        }
         delete targetr;
         return;
     }
+
 
     //If the word is not found, it is added on a
 
@@ -144,36 +74,86 @@ void doTweet(DSString tweet){
 
 }
 
+void getNextTweet(){
+    thisTweet = " ";
+    char temp;
+    int commaCount = 0;
+        for (int i = 0; i < 2048; i++){
+        /*Loop will stop when it hits end of line char*/
+            subject->get(temp);
+            cerr<<"OK";
+            if (commaCount == 3){
+                 cerr<<"3";
+            /*Now in tweet. Comma count cease. Concatnation to return value initiated.*/
+                 thisTweet=thisTweet+temp;
+                 cerr <<"AOK";
+                 if (temp == '\n'){
+                   return;
+                 }
+            }else if(temp == ','){
+                commaCount++;
+            }else if(temp == '\n'){
+                cerr << "n";
+                return ;
+            }
+        }
+
+    return ;// = "\n"; //Failure case.
+}
+int getNextRating(){
+    int result = 0; char temp; int commaCount = 0;
+        for (int i = 0; i < 2048; i++){
+            targetr->get(temp);
+            if (commaCount == 1){
+                commaCount++;
+                targetr->get(temp);
+                result = (temp - '0') % 48;
+                cerr<<"3";
+                if (temp == '\n'){
+                   return result;
+                }
+            }else if(temp == ','){
+                commaCount++;
+            }else if(temp == '\n'){
+                return result;
+            }
+        }
+    return result; //Failure case.
+}
 
 
-int train(char* const argv[]){// TRAINER OP
+
+int train(char* argv[]){// TRAINER OP
     //Training
     subject = new ifstream(argv[2]); //Fstream is a more abstract
     targetr = new ifstream(argv[3]);
     targetw = new ofstream(argv[3]);//DO not open this with an fstream
-    subj = argv[2];
-    targ = argv[3];
+    subj = argv[2]; targ = argv[3];
+
     if(!*subject||!*targetw){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
     cerr << "Training!" << endl;
+    getNextRating();
+    for (int a = 0; a < 10; a++){ //Iterates through tweets
 
-    for (int a = 0; a < 10000; a++){ //Iterates through tweets
+        sentiment += getNextRating();cerr << sentiment << endl;
 
+       // cerr << getNextTweet().c_str();
+        cerr << "NextTweet" << endl;
     }
+    getNextTweet();
     cerr << "1";
     delete subject; cerr << "2"; delete targetr; cerr << "3"; delete targetw; cerr << "4";
-    delete subj; cerr << "5"; delete targ; cerr << "6";
+    //delete subj; cerr << "5"; delete targ; cerr << "6";
     return 0;
 }
-int test(char* const argv[]){// TESTER OP
+int test(char* argv[]){// TESTER OP
     subject = new ifstream(argv[2]);
     instructr = new ifstream(argv[3]);
     targetw = new ofstream(argv[4]);
-    subj = argv[2];
-    instr = argv[3];
-    targ = argv[4];
+    subj = argv[2]; instr = argv[3]; targ = argv[4];
 
     if(!*subject||!*instructr){
         cerr << "Files not found!" << endl;
@@ -182,16 +162,17 @@ int test(char* const argv[]){// TESTER OP
     cerr << "Testing!" << endl;
 
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
-
+         cerr << "NextTweet" << endl;
+         //cerr << getNextTweet()
     }
     cerr << "1";
     delete subject; cerr << "2";delete instructr;cerr << "3"; delete targetw;cerr << "4";
-    delete subj; cerr << "5";delete instr; cerr << "6"; delete targ; cerr << "7";
+    //delete subj; cerr << "5";delete instr; cerr << "6"; delete targ; cerr << "7";
     return 0;
 }
 
 
-int main(int argc,  char* const argv[])
+int main(int argc,  char* argv[])
 {
     cerr << "Starting! "<< argc << " argument(s)!" <<endl;
     if (argc < 4){

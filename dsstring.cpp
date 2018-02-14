@@ -25,6 +25,7 @@ DSString::~DSString(){
 }
 DSString& DSString::operator= (const char* cstring){
     strcpy(chars, cstring);
+    this->length = 0;
     return *this;
 }
 DSString& DSString::operator= (const DSString& DSString){
@@ -34,8 +35,20 @@ DSString& DSString::operator= (const DSString& DSString){
     return *this;
     //Tried to use copy constructor, some people do it the other way around
 }
+
 DSString DSString::operator+ (const DSString& DSString){
    this->chars = strcat(chars, DSString.chars);
+   this->length = 0;
+   return *this; //returns dereferenced this pointer
+}
+DSString DSString::operator+ (const char* cstring){
+   this->chars = strcat(chars, cstring);
+   this->length = 0;
+   return *this; //returns dereferenced this pointer
+}
+DSString DSString::operator+ (const char achar){
+   this->chars = strcat(chars, ""+achar);
+   this->length = 0;
    return *this; //returns dereferenced this pointer
 }
 

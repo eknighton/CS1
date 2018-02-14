@@ -8,4 +8,5 @@ SOURCES += main.cpp \
     readerfunctions.cpp
 
 HEADERS += \
-    dsstring.h
+    dsstring.h \
+    main.h
