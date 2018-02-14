@@ -19,15 +19,32 @@ char* targ{nullptr}; //Global pointer to target filename
 char* instr{nullptr}; //Global pointer to instruction filename
 
 
+
 void trainWord(DSString word){ cerr << word.c_str();
 
     targetr = ifstream(targ);
-    DSString word2;
-    //Will now iterate though document, locating the word if it occurs.
+    targetw = ofstream(targ);
+    char* temp;
+    //Will now iterate though file, locating the word if it occurs.
     for (int i = 0; i < 99999; i++){
         for (int k = 0; k < 10000; k++){
-            if (word == word2){
-
+            targetr.get(temp[i]);
+            if (temp[i] == '\n'){
+                delete[] temp;
+                temp=nullptr;
+                k = 10000;
+            }
+            if (temp == word.c_str()){
+                delete[] temp;
+                temp = nullptr;
+                for (int j = 0; j < 10000; j++){
+                    targetr.get(temp[j]);
+                    if (temp[j] == '\n'){
+                       targetw<< sentiment << '\n'; //Will add to line reader is on
+                       j = 10000;
+                    }
+                }
+                k = 10000;
             }
         }
         return;
@@ -38,7 +55,37 @@ void trainWord(DSString word){ cerr << word.c_str();
     return;
 }
 void checkWord(DSString word){
+    targetr = ifstream(targ);
+    targetw = ofstream(targ);
+    char* temp;
+    //Will now iterate though file, locating the word if it occurs.
+    for (int i = 0; i < 99999; i++){
+        for (int k = 0; k < 10000; k++){
+            targetr.get(temp[i]);
+            if (temp[i] == '\n'){
+                delete[] temp;
+                temp=nullptr;
+                k = 10000;
+            }
+            if (temp == word.c_str()){
+                delete[] temp;
+                temp = nullptr;
+                for (int j = 0; j < 10000; j++){
+                    targetr.get(temp[j]);
+                    sentiment+= (temp[j] - '0')%48-2; //AscII conversion then subtract 2.
+                    if (temp[j] == '\n'){
+                       j = 10000;
+                    }
+                }
+                k = 10000;
+            }
+        }
+        return;
+    }
 
+
+    //If the word is not found, it is added on a
+    return;
 }
 
 void doTweet(DSString tweet){
@@ -136,8 +183,9 @@ int train(char* argv[]){// TRAINER OP
     cerr << "Training!" << endl;
     getNextRating();
     for (int a = 0; a < 10; a++){ //Iterates through tweets
-        DStemp = getNextTweet().c_str();
+        DStemp = getNextTweet().c_str(); //Testing revealed that using the copy constructor or assignment operator corrupted the data.
         cerr << getNextTweet().c_str()<< endl;
+        sentiment = getNextRating();
         doTweet(DStemp);
     }
     delete[] cstring;
@@ -160,6 +208,9 @@ int test(char* argv[]){// TESTER OP
          DStemp = getNextTweet();
          cerr << DStemp.c_str();
          doTweet(DStemp);
+         if (sentiment > 0){
+             targetw << "4";
+         }
     }
     delete[] cstring;
     return 0;
@@ -181,7 +232,6 @@ int main(int argc,  char* argv[])
          if (argc < 5){
              cerr << "In testing mode, <subject> <reference> <target> required!"<<endl;
          }
-
         return test(argv); //Calls testing op
     }
     cerr << "Invalid arg: Use -r to train, -c to test." << endl;
