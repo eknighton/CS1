@@ -9,8 +9,6 @@ using namespace std;
 //A to I : pass in a cstring number and it returns an integer
 bool mode;
 int sentiment;
-DSString thisTweet;
-DSString thatTweet;
 ifstream subject;
 ofstream targetw; //Global write to target stream object
 ifstream targetr;//Global read from target stream object
@@ -22,6 +20,7 @@ char* instr{nullptr}; //Global pointer to instruction filename
 
 
 void trainWord(DSString word){ cerr << word.c_str();
+
     targetr = ifstream(targ);
     DSString word2;
     //Will now iterate though document, locating the word if it occurs.
@@ -43,10 +42,8 @@ void checkWord(DSString word){
 }
 
 void doTweet(DSString tweet){
-    cerr<<"doWord initd";
-    cerr<<tweet.c_str();
     char* ctweet = tweet.c_str();
-
+    cerr << tweet.c_str();
     for (int i = 0; i < 2000; i++){
         if (ctweet[i] == ' ' || ctweet[i] == ',' || ctweet[i] == '.' || ctweet[i] == '!' || ctweet[i] == '?' || ctweet[i] == ';' || ctweet[i] == ':' || ctweet[i] == '-' || ctweet[i] == '"'){//Finds first non member
             if (mode){ //Ladder runs appropriate function on word
@@ -79,11 +76,12 @@ DSString getNextTweet(){
         /*Loop will stop when it hits end of line char*/
             subject.get(*temp);
             if (commaCount == 3){
-            /*Now in tweet. Comma count cease. Concatnation to return value initiated.*/
+            /*Now in tweet. Comma count ceases. Concatnation to return value initiated.*/
                  strcat(cstring, temp);
                  if (*temp == '\n'){
                    delete temp;
                     result =cstring;
+                    cerr << result.c_str();
                    return result;
                  }
             }else if(*temp == ','){
@@ -91,10 +89,12 @@ DSString getNextTweet(){
             }else if(*temp == '\n'){
                 delete temp;
                 result =cstring;
+                 cerr << result.c_str();
                return result;
             }
         }
     delete temp;
+         cerr << result.c_str();
     return result;// = "\n"; //Failure case.
 }
 int getNextRating(){
@@ -126,7 +126,7 @@ int train(char* argv[]){// TRAINER OP
     targetr =ifstream(argv[3]);
     targetw =ofstream(argv[3]);//DO not open this with an fstream
     subj = argv[2]; targ = argv[3];
-    DSString DStemp;
+    DSString DStemp(" ");
     mode = false;
 
     if(!subject||!targetw){
@@ -136,11 +136,9 @@ int train(char* argv[]){// TRAINER OP
     cerr << "Training!" << endl;
     getNextRating();
     for (int a = 0; a < 10; a++){ //Iterates through tweets
-        getNextTweet();
         DStemp = getNextTweet().c_str();
-        cerr << DStemp.c_str();
-        cerr<<"kk";
-       // doTweet(DStemp);
+        cerr << getNextTweet().c_str()<< endl;
+        doTweet(DStemp);
     }
     delete[] cstring;
     return 0;

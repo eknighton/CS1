@@ -9,13 +9,15 @@ DSString::DSString()
 }
 DSString::DSString(const char* cstring){ //
   std::cerr << "in string ";
-  chars = new char[500]; //Leak here.
+  chars = new char[50000]; //Leak here.
   strcpy(chars, cstring);//Copies the value at pointed location
   std::cerr << "did copy ";
 }
 DSString::DSString(const DSString& DSString){
+  chars = new char[DSString.length];//Memory leak but meh
   this->length = DSString.length;
-  *(this->chars) = *(DSString.chars);
+  char* temp = DSString.chars;
+  *chars = *temp;
   //chars = new char []; //Must occur
   //*chars = DSString.chars*;
   //*DSString.chars; //Value of string's contents -  but where does it stop, will it just give the first value?
