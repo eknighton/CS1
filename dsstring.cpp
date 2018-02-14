@@ -25,13 +25,14 @@ DSString::~DSString(){
 }
 DSString& DSString::operator= (const char* cstring){
     strcpy(chars, cstring);
-    this->length = 0;
     return *this;
 }
 DSString& DSString::operator= (const DSString& DSString){
-    //Delete data
-    this->length = DSString.length;
-    *this->chars = *DSString.chars;
+    if (this != &DSString){
+        delete[] this->chars;this->chars = nullptr;
+        char* temp = DSString.chars;
+        *(this->chars) = *temp;
+    }
     return *this;
     //Tried to use copy constructor, some people do it the other way around
 }

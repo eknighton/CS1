@@ -10,20 +10,20 @@ using namespace std;
 bool mode;
 int sentiment;
 DSString thisTweet;
-ifstream* subject;
-ofstream* targetw; //Global write to target stream object
-ifstream* targetr;//Global read from target stream object
-ofstream* instructw; //Global write to instructions stream object
-ifstream* instructr; //Global read from instructions stream object
+DSString thatTweet;
+ifstream subject;
+ofstream targetw; //Global write to target stream object
+ifstream targetr;//Global read from target stream object
+ofstream instructw; //Global write to instructions stream object
+ifstream instructr; //Global read from instructions stream object
 char* subj{nullptr}; //Global pointer to subject filename
 char* targ{nullptr}; //Global pointer to target filename
 char* instr{nullptr}; //Global pointer to instruction filename
 
 
 void trainWord(DSString word){ cerr << word.c_str();
-    delete targetr; targetr = new ifstream(targ);
+    targetr = ifstream(targ);
     DSString word2;
-
     //Will now iterate though document, locating the word if it occurs.
     for (int i = 0; i < 99999; i++){
         for (int k = 0; k < 10000; k++){
@@ -31,14 +31,11 @@ void trainWord(DSString word){ cerr << word.c_str();
 
             }
         }
-        delete targetr;
         return;
     }
 
 
     //If the word is not found, it is added on a
-
-    delete targetr;
     return;
 }
 void checkWord(DSString word){
@@ -75,38 +72,43 @@ void doTweet(DSString tweet){
 }
 
 void getNextTweet(){
-    thisTweet = " ";
-    char temp;
+    cerr <<" in";
+    thisTweet;
+    cerr << "at char*";
+    char* temp = new char;
     int commaCount = 0;
         for (int i = 0; i < 2048; i++){
         /*Loop will stop when it hits end of line char*/
-            subject->get(temp);
+            cerr<< "subj";
+            subject.get(*temp);
             cerr<<"OK";
             if (commaCount == 3){
                  cerr<<"3";
             /*Now in tweet. Comma count cease. Concatnation to return value initiated.*/
-                 thisTweet=thisTweet+temp;
+                 thisTweet = thatTweet;//+temp;
                  cerr <<"AOK";
-                 if (temp == '\n'){
+                 if (*temp == '\n'){
+                   delete temp;
                    return;
                  }
-            }else if(temp == ','){
+            }else if(*temp == ','){
                 commaCount++;
-            }else if(temp == '\n'){
+            }else if(*temp == '\n'){
                 cerr << "n";
-                return ;
+                delete temp;
+                return;
             }
         }
-
+    delete temp;
     return ;// = "\n"; //Failure case.
 }
 int getNextRating(){
     int result = 0; char temp; int commaCount = 0;
         for (int i = 0; i < 2048; i++){
-            targetr->get(temp);
+            targetr.get(temp);
             if (commaCount == 1){
                 commaCount++;
-                targetr->get(temp);
+                targetr.get(temp);
                 result = (temp - '0') % 48;
                 cerr<<"3";
                 if (temp == '\n'){
@@ -125,12 +127,12 @@ int getNextRating(){
 
 int train(char* argv[]){// TRAINER OP
     //Training
-    subject = new ifstream(argv[2]); //Fstream is a more abstract
-    targetr = new ifstream(argv[3]);
-    targetw = new ofstream(argv[3]);//DO not open this with an fstream
+    subject =ifstream(argv[2]); //Fstream is a more abstract
+    targetr =ifstream(argv[3]);
+    targetw =ofstream(argv[3]);//DO not open this with an fstream
     subj = argv[2]; targ = argv[3];
 
-    if(!*subject||!*targetw){
+    if(!subject||!targetw){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
@@ -144,18 +146,18 @@ int train(char* argv[]){// TRAINER OP
         cerr << "NextTweet" << endl;
     }
     getNextTweet();
-    cerr << "1";
-    delete subject; cerr << "2"; delete targetr; cerr << "3"; delete targetw; cerr << "4";
+    //cerr << "1";
+    //delete subject; cerr << "2"; delete targetr; cerr << "3"; delete targetw; cerr << "4";
     //delete subj; cerr << "5"; delete targ; cerr << "6";
     return 0;
 }
 int test(char* argv[]){// TESTER OP
-    subject = new ifstream(argv[2]);
-    instructr = new ifstream(argv[3]);
-    targetw = new ofstream(argv[4]);
+    subject = ifstream(argv[2]);
+    instructr = ifstream(argv[3]);
+    targetw = ofstream(argv[4]);
     subj = argv[2]; instr = argv[3]; targ = argv[4];
 
-    if(!*subject||!*instructr){
+    if(!subject||!instructr){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
@@ -165,8 +167,8 @@ int test(char* argv[]){// TESTER OP
          cerr << "NextTweet" << endl;
          //cerr << getNextTweet()
     }
-    cerr << "1";
-    delete subject; cerr << "2";delete instructr;cerr << "3"; delete targetw;cerr << "4";
+    //cerr << "1";
+    //delete subject; cerr << "2";delete instructr;cerr << "3"; delete targetw;cerr << "4";
     //delete subj; cerr << "5";delete instr; cerr << "6"; delete targ; cerr << "7";
     return 0;
 }
