@@ -6,9 +6,9 @@
 
 using namespace std;
 
-char* tweetIn(fstream&, fstream&);
+/*char* tweetIn(ifstream&, ofstream&);
 
-int checkWord(char* word, fstream& reference){ //Used to see
+int checkWord(char* word, ifstream& reference){ //Used to see
     char c[141];
     char n[20];
     char indicator;
@@ -19,7 +19,7 @@ int checkWord(char* word, fstream& reference){ //Used to see
     }
     return results;
 }
-int checkTweet(char* tweet, fstream& sample, fstream& reference){
+int checkTweet(char* tweet, ifstream& sample, ofstream& reference){
     int result;
     char c[140];
     char* word;
@@ -36,7 +36,7 @@ int checkTweet(char* tweet, fstream& sample, fstream& reference){
     return result;
 }
 
-char* tweetIn(fstream& data, fstream& ratings){
+char* tweetIn(ifstream& data, ofstream& ratings){
     char c[141];
     char n[20];
     char c2;
@@ -81,42 +81,112 @@ char* tweetIn(fstream& data, fstream& ratings){
         //cerr << "a-ok";
         //result = c;
     return c;
+}*/
+//A to I : pass in a cstring number and it returns an integer
+bool mode;
+int sentiment;
+ifstream* subject;
+ofstream* targetw; //Global write to target stream object
+ifstream* targetr;//Global read from target stream object
+ofstream* instructw; //Global write to instructions stream object
+ifstream* instructr; //Global read from instructions stream object
+char* subj{nullptr};
+char* targ{nullptr};
+char* instr{nullptr};
+
+
+void trainWord(DSString word){
+    delete targetr;
+    targetr = new ifstream(targ);
+    //Will now iterate though document, locating the word if it occurs.
+    for (int i = 0; i < 10000; i++){
+        //When the word is found, global int sentiment value is added to the int read on its line (-2,-1,1, or 2)
+
+        delete targetr;
+        return;
+    }
+
+    //If the word is not found, it is added on a
+
+    delete targetr;
+    return;
+}
+void checkWord(DSString word){
+
 }
 
+void doTweet(DSString tweet){
+    cerr<<"doWord initd";
+    cerr<<tweet.c_str();
+    char* ctweet = tweet.c_str();
+
+    for (int i = 0; i < 2000; i++){
+        if (ctweet[i] == ' ' || ctweet[i] == ',' || ctweet[i] == '.' || ctweet[i] == '!' || ctweet[i] == '?' || ctweet[i] == ';' || ctweet[i] == ':' || ctweet[i] == '-' || ctweet[i] == '"'){//Finds first non member
+            if (mode){ //Ladder runs appropriate function on word
+                checkWord(tweet.substring(0,i));
+            }else{
+                trainWord(tweet.substring(0,i));
+            }
+            doTweet(tweet.substring(i+1,tweet.getLength()-(i+1))); //Make sure this line is right
+            delete[] ctweet;
+            return;
+        }
+        if (ctweet[i] == '\n'){
+            if (mode){ //Ladder runs appropriate function on word
+                checkWord(tweet.substring(0,i));
+            }else{
+                trainWord(tweet.substring(0,i));
+            }
+            delete[] ctweet;
+            return;
+        }
+    }
+
+}
+
+
+
 int train(char* const argv[]){// TRAINER OP
-    fstream data(argv[2]);
-    fstream target(argv[3]);
-    if(!data||!target){
+    //Training
+    subject = new ifstream(argv[2]); //Fstream is a more abstract
+    targetr = new ifstream(argv[3]);
+    targetw = new ofstream(argv[3]);//DO not open this with an fstream
+    subj = argv[2];
+    targ = argv[3];
+    if(!*subject||!*targetw){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
     cerr << "Training!" << endl;
-    tweetIn(data, target);
+
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
-        target << ',' << a << (tweetIn(data, target)); //Writes cstring to target file
-        target.write((tweetIn(data, target)),100);
+
     }
+    cerr << "1";
+    delete subject; cerr << "2"; delete targetr; cerr << "3"; delete targetw; cerr << "4";
+    delete subj; cerr << "5"; delete targ; cerr << "6";
     return 0;
 }
 int test(char* const argv[]){// TESTER OP
-    fstream sample(argv[2]);
-    fstream records(argv[3]);
-    fstream target(argv[4]);
-    if(!sample||!records){
+    subject = new ifstream(argv[2]);
+    instructr = new ifstream(argv[3]);
+    targetw = new ofstream(argv[4]);
+    subj = argv[2];
+    instr = argv[3];
+    targ = argv[4];
+
+    if(!*subject||!*instructr){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
     cerr << "Testing!" << endl;
 
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
-        if (checkTweet(tweetIn(sample, records), sample, records) > 2){
-            target << '\t' << ' ' << '4';
-        }else{
-            target << '\t' << ' ' << '4';
-        }
-        //Iterates through the the lines in the train target, counting positive, negatives
-    }
 
+    }
+    cerr << "1";
+    delete subject; cerr << "2";delete instructr;cerr << "3"; delete targetw;cerr << "4";
+    delete subj; cerr << "5";delete instr; cerr << "6"; delete targ; cerr << "7";
     return 0;
 }
 

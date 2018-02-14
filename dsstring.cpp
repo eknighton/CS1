@@ -4,14 +4,17 @@
 DSString::DSString()
 {
   chars = nullptr;
+  length = 0;
 }
-DSString::DSString(char* cstring){
-    chars = cstring;
+DSString::DSString(const char* cstring){ //
+  strcpy(chars, cstring);//Copies the value at pointed location
 }
 DSString::DSString(const DSString& DSString){
-  *DSString.chars; //Value of string's contents -  but where does it stop, will it just give the first value?
-
-
+  this->length = DSString.length;
+  *this->chars = *DSString.chars;
+  //chars = new char []; //Must occur
+  //*chars = DSString.chars*;
+  //*DSString.chars; //Value of string's contents -  but where does it stop, will it just give the first value?
   //Copy constructor will assign pointer to same location
   //Not assigning proper pair
   //You are passing by value, what is the address of the value?
@@ -24,31 +27,59 @@ DSString& DSString::operator= (const char* cstring){
     strcpy(chars, cstring);
     return *this;
 }
-/*
 DSString& DSString::operator= (const DSString& DSString){
-    return &DSString(DSString);
+    //Delete data
+    this->length = DSString.length;
+    *this->chars = *DSString.chars;
+    return *this;
+    //Tried to use copy constructor, some people do it the other way around
 }
-
 DSString DSString::operator+ (const DSString& DSString){
-    return strcat(chars, DSString.chars);
+   this->chars = strcat(chars, DSString.chars);
+   return *this; //returns dereferenced this pointer
 }
 
 bool DSString::operator== (const char* cstring){
-    return strcomp(chars, cstring);
+    return strcmp(chars, cstring)==0;//Returns 0 if true
 }
 bool DSString::operator== (const DSString& DSString){
-    return strcomp(chars, DSString.chars);
+    return strcmp(chars, DSString.chars)==0;//Returns 0 if true
 }
 
-bool DSString::operator> (const DSString& DSString){
-    return
+bool DSString::operator> (const DSString& DSString){ //Alphabetising
+   for (int i = 0; i < length; i++){
+        if (chars[i] > DSString.chars[i]){
+            return true;
+        }else if (chars[i] < DSString.chars[i]){
+            return false;
+        }
+   }
 }
 
-char& operator[] (const int);
-*/
+char& DSString::operator[] (const int length){
+    delete[] chars;
+    this->chars = new char[length];
+}
+int DSString::getLength(){
+    return length;
+}
+DSString DSString::substring(int start, int numChars){
+    DSString substring;
+    for(start; start < length; start++){
+        substring.chars = strcat(substring.chars, (const char*)chars[start]);
+    }
+    return substring;
+}
+char* DSString::c_str(){
+    return chars;
+}
+/*friend std::ostream& operator<< (std::ostream&, const DSString&){
+
+}*/
 
 
-//Avoid passing vectors, or large objects by value
+
+//Avoid passing vectors, or large objects by value - which is the default
 
 
 //Assignment operator, somehow...
