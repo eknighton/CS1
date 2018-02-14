@@ -5,10 +5,8 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     dsstring.cpp \
-    readerfunctions.cpp \
-    catch.cpp
+    readerfunctions.cpp
 
 HEADERS += \
     dsstring.h \
-    main.h \
-    catch.hpp
+    main.h

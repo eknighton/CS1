@@ -1,17 +1,21 @@
 #include "dsstring.h"
 #include <cstring>
+#include <iostream>
 
 DSString::DSString()
 {
-  chars = nullptr;
+  chars = new char[50000];
   length = 0;
 }
 DSString::DSString(const char* cstring){ //
+  std::cerr << "in string ";
+  chars = new char[500]; //Leak here.
   strcpy(chars, cstring);//Copies the value at pointed location
+  std::cerr << "did copy ";
 }
 DSString::DSString(const DSString& DSString){
   this->length = DSString.length;
-  *this->chars = *DSString.chars;
+  *(this->chars) = *(DSString.chars);
   //chars = new char []; //Must occur
   //*chars = DSString.chars*;
   //*DSString.chars; //Value of string's contents -  but where does it stop, will it just give the first value?
@@ -29,7 +33,7 @@ DSString& DSString::operator= (const char* cstring){
 }
 DSString& DSString::operator= (const DSString& DSString){
     if (this != &DSString){
-        delete[] this->chars;this->chars = nullptr;
+        //delete[] this->chars;this->chars = nullptr;
         char* temp = DSString.chars;
         *(this->chars) = *temp;
     }
@@ -43,6 +47,7 @@ DSString DSString::operator+ (const DSString& DSString){
    return *this; //returns dereferenced this pointer
 }
 DSString DSString::operator+ (const char* cstring){
+   chars = new char[5000];
    this->chars = strcat(chars, cstring);
    this->length = 0;
    return *this; //returns dereferenced this pointer

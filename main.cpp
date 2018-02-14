@@ -70,37 +70,32 @@ void doTweet(DSString tweet){
     }
 
 }
-
-void getNextTweet(){
-    cerr <<" in";
-    thisTweet;
-    cerr << "at char*";
+char* cstring = new char[5000];
+DSString getNextTweet(){
     char* temp = new char;
+    DSString result;
     int commaCount = 0;
         for (int i = 0; i < 2048; i++){
         /*Loop will stop when it hits end of line char*/
-            cerr<< "subj";
             subject.get(*temp);
-            cerr<<"OK";
             if (commaCount == 3){
-                 cerr<<"3";
             /*Now in tweet. Comma count cease. Concatnation to return value initiated.*/
-                 thisTweet = thatTweet;//+temp;
-                 cerr <<"AOK";
+                 strcat(cstring, temp);
                  if (*temp == '\n'){
                    delete temp;
-                   return;
+                    result =cstring;
+                   return result;
                  }
             }else if(*temp == ','){
                 commaCount++;
             }else if(*temp == '\n'){
-                cerr << "n";
                 delete temp;
-                return;
+                result =cstring;
+               return result;
             }
         }
     delete temp;
-    return ;// = "\n"; //Failure case.
+    return result;// = "\n"; //Failure case.
 }
 int getNextRating(){
     int result = 0; char temp; int commaCount = 0;
@@ -131,6 +126,8 @@ int train(char* argv[]){// TRAINER OP
     targetr =ifstream(argv[3]);
     targetw =ofstream(argv[3]);//DO not open this with an fstream
     subj = argv[2]; targ = argv[3];
+    DSString DStemp;
+    mode = false;
 
     if(!subject||!targetw){
         cerr << "Files not found!" << endl;
@@ -139,37 +136,34 @@ int train(char* argv[]){// TRAINER OP
     cerr << "Training!" << endl;
     getNextRating();
     for (int a = 0; a < 10; a++){ //Iterates through tweets
-
-        sentiment += getNextRating();cerr << sentiment << endl;
-
-       // cerr << getNextTweet().c_str();
-        cerr << "NextTweet" << endl;
+        getNextTweet();
+        DStemp = getNextTweet().c_str();
+        cerr << DStemp.c_str();
+        cerr<<"kk";
+       // doTweet(DStemp);
     }
-    getNextTweet();
-    //cerr << "1";
-    //delete subject; cerr << "2"; delete targetr; cerr << "3"; delete targetw; cerr << "4";
-    //delete subj; cerr << "5"; delete targ; cerr << "6";
+    delete[] cstring;
     return 0;
 }
 int test(char* argv[]){// TESTER OP
     subject = ifstream(argv[2]);
     instructr = ifstream(argv[3]);
     targetw = ofstream(argv[4]);
+    DSString DStemp;
     subj = argv[2]; instr = argv[3]; targ = argv[4];
+    mode = true;
 
     if(!subject||!instructr){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
     cerr << "Testing!" << endl;
-
     for (int a = 0; a < 10000; a++){ //Iterates through tweets
-         cerr << "NextTweet" << endl;
-         //cerr << getNextTweet()
+         DStemp = getNextTweet();
+         cerr << DStemp.c_str();
+         doTweet(DStemp);
     }
-    //cerr << "1";
-    //delete subject; cerr << "2";delete instructr;cerr << "3"; delete targetw;cerr << "4";
-    //delete subj; cerr << "5";delete instr; cerr << "6"; delete targ; cerr << "7";
+    delete[] cstring;
     return 0;
 }
 
@@ -194,6 +188,7 @@ int main(int argc,  char* argv[])
     }
     cerr << "Invalid arg: Use -r to train, -c to test." << endl;
     return 0;
+
 }
 
 
