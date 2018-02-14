@@ -6,7 +6,7 @@
 
 using namespace std;
 
-//A to I : pass in a cstring number and it returns an integer
+//atoi : pass in a cstring number and it returns an integer
 bool mode;
 int sentiment;
 ifstream subject;
@@ -26,7 +26,7 @@ void trainWord(DSString word){ cerr << word.c_str();
     targetw = ofstream(targ);
     char* temp;
     //Will now iterate though file, locating the word if it occurs.
-    for (int i = 0; i < 99999; i++){
+    for (int i = 0; i < 1000000; i++){
         for (int k = 0; k < 10000; k++){
             targetr.get(temp[i]);
             if (temp[i] == '\n'){
@@ -40,18 +40,15 @@ void trainWord(DSString word){ cerr << word.c_str();
                 for (int j = 0; j < 10000; j++){
                     targetr.get(temp[j]);
                     if (temp[j] == '\n'){
-                       targetw<< sentiment << '\n'; //Will add to line reader is on
-                       j = 10000;
+                       targetw<< sentiment << '\n'; //Will add sentiment value to line reader is on
+                       return;
                     }
                 }
-                k = 10000;
+                return;
             }
         }
-        return;
     }
-
-
-    //If the word is not found, it is added on a
+    targetw << word.c_str() << sentiment << '\n'; //If the word is not found, it is added on the last line.
     return;
 }
 void checkWord(DSString word){
@@ -59,7 +56,7 @@ void checkWord(DSString word){
     targetw = ofstream(targ);
     char* temp;
     //Will now iterate though file, locating the word if it occurs.
-    for (int i = 0; i < 99999; i++){
+    for (int i = 0; i < 1000000; i++){
         for (int k = 0; k < 10000; k++){
             targetr.get(temp[i]);
             if (temp[i] == '\n'){
@@ -80,12 +77,9 @@ void checkWord(DSString word){
                 k = 10000;
             }
         }
-        return;
+
     }
-
-
-    //If the word is not found, it is added on a
-    return;
+    return;//No effect if not found.
 }
 
 void doTweet(DSString tweet){

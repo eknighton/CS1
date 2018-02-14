@@ -4,40 +4,40 @@
 
 DSString::DSString()
 {
-  chars = new char[50000];
+  chars = nullptr;
   length = 0;
 }
 DSString::DSString(const char* cstring){ //
-  std::cerr << "in string ";
-  chars = new char[50000]; //Leak here.
-  strcpy(chars, cstring);//Copies the value at pointed location
-  std::cerr << "did copy ";
+    chars = nullptr;
+    if(strlen(cstring)>length){
+        this->resize(strlen(cstring));
+        strcpy(chars, cstring);
+    }else{
+        std::cerr << "Passed cstring has length 0.";
+    }
 }
 DSString::DSString(const DSString& DSString){
-  chars = new char[DSString.length];//Memory leak but meh
-  this->length = DSString.length;
+  this->resize(DSString.length);
   char* temp = DSString.chars;
   *chars = *temp;
-  //chars = new char []; //Must occur
-  //*chars = DSString.chars*;
-  //*DSString.chars; //Value of string's contents -  but where does it stop, will it just give the first value?
-  //Copy constructor will assign pointer to same location
-  //Not assigning proper pair
-  //You are passing by value, what is the address of the value?
+  delete[] temp;
 }
 DSString::~DSString(){
-    chars = nullptr;
-    delete[] chars;
+    delete[] chars; chars = nullptr;
 }
 DSString& DSString::operator= (const char* cstring){
-    strcpy(chars, cstring);
+    if(strlen(cstring)>length){
+        this->resize(strlen(cstring));
+    }
+    strcpy(chars, cstring);\
     return *this;
 }
 DSString& DSString::operator= (const DSString& DSString){
     if (this != &DSString){
-        //delete[] this->chars;this->chars = nullptr;
         char* temp = DSString.chars;
-        *(this->chars) = *temp;
+        this->resize(DSString.length);
+        *chars = *temp;
+        delete[] temp; temp = nullptr;
     }
     return *this;
     //Tried to use copy constructor, some people do it the other way around
@@ -94,6 +94,16 @@ DSString DSString::substring(int start, int numChars){
 char* DSString::c_str(){
     return chars;
 }
+
+void DSString::resize(int len){
+    if (chars == nullptr){ chars = new char[len]; length = len; return;}
+    char* temp = new char[length];
+    delete chars; chars = nullptr;
+    length = len;
+    chars = new char[length];
+    *chars = *temp;
+}
+
 /*friend std::ostream& operator<< (std::ostream&, const DSString&){
 
 }*/

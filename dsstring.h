@@ -25,11 +25,8 @@ public:
     int getLength();
     DSString substring(int start, int numChars);
     char* c_str();
+    void resize(int);
     friend std::ostream& operator<< (std::ostream&, const DSString&);
-
-    //Friend function for file stream
-    //Rule of three
-    //
 };
 
-#endif // DSSTRING_H
+#endif //DSSTRING_H
