@@ -96,12 +96,12 @@ char* DSString::c_str(){
 }
 
 void DSString::resize(int len){
-    if (chars == nullptr){ chars = new char[len]; length = len; return;}
-    char* temp = new char[length];
-    delete chars; chars = nullptr;
+    //if (chars == nullptr){ chars = new char[len]; length = len; return;}
+    //char* temp = new char[length];
+    delete[] chars; //chars = nullptr;
     length = len;
-    chars = new char[length];
-    *chars = *temp;
+    chars = new char[length+1];
+    //*chars = *temp;
 }
 
 /*friend std::ostream& operator<< (std::ostream&, const DSString&){

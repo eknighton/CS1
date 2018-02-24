@@ -55,6 +55,7 @@ void checkWord(DSString word){
     targetr = ifstream(targ);
     targetw = ofstream(targ);
     char* temp;
+    cerr  << "checkword forloop";
     //Will now iterate though file, locating the word if it occurs.
     for (int i = 0; i < 1000000; i++){
         for (int k = 0; k < 10000; k++){
@@ -84,7 +85,8 @@ void checkWord(DSString word){
 
 void doTweet(DSString tweet){
     char* ctweet = tweet.c_str();
-    cerr << tweet.c_str();
+    //cerr << tweet.c_str();
+    cerr << "doword";
     for (int i = 0; i < 2000; i++){
         if (ctweet[i] == ' ' || ctweet[i] == ',' || ctweet[i] == '.' || ctweet[i] == '!' || ctweet[i] == '?' || ctweet[i] == ';' || ctweet[i] == ':' || ctweet[i] == '-' || ctweet[i] == '"'){//Finds first non member
             if (mode){ //Ladder runs appropriate function on word
@@ -120,7 +122,7 @@ DSString getNextTweet(){
             /*Now in tweet. Comma count ceases. Concatnation to return value initiated.*/
                  strcat(cstring, temp);
                  if (*temp == '\n'){
-                   delete temp;
+                   delete[] temp;
                     result =cstring;
                     cerr << result.c_str();
                    return result;
@@ -128,14 +130,14 @@ DSString getNextTweet(){
             }else if(*temp == ','){
                 commaCount++;
             }else if(*temp == '\n'){
-                delete temp;
+                delete[] temp;
                 result =cstring;
-                 cerr << result.c_str();
+                 cerr << "nextTweet" << result.c_str();
                return result;
             }
         }
     delete temp;
-         cerr << result.c_str();
+         cerr << "nextTweet" << result.c_str();
     return result;// = "\n"; //Failure case.
 }
 int getNextRating(){
@@ -178,7 +180,7 @@ int train(char* argv[]){// TRAINER OP
     getNextRating();
     for (int a = 0; a < 10; a++){ //Iterates through tweets
         DStemp = getNextTweet().c_str(); //Testing revealed that using the copy constructor or assignment operator corrupted the data.
-        cerr << getNextTweet().c_str()<< endl;
+        cerr << "trainOut1" << getNextTweet().c_str()<< endl;
         sentiment = getNextRating();
         doTweet(DStemp);
     }
@@ -186,7 +188,7 @@ int train(char* argv[]){// TRAINER OP
     return 0;
 }
 int test(char* argv[]){// TESTER OP
-    subject = ifstream(argv[2]);
+           subject = ifstream(argv[2]);
     instructr = ifstream(argv[3]);
     targetw = ofstream(argv[4]);
     DSString DStemp;
