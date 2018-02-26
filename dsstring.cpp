@@ -5,60 +5,54 @@
 DSString::DSString()
 {
   chars = nullptr;
-  length = 0;
 }
 DSString::DSString(const char* cstring){ //
-    chars = nullptr;
-    if(strlen(cstring)>length){
-        this->resize(strlen(cstring));
-        strcpy(chars, cstring);
-    }else{
-        std::cerr << "Passed cstring has length 0.";
-    }
+    chars = strdup(cstring);
 }
 DSString::DSString(const DSString& DSString){
-  this->resize(DSString.length);
-  char* temp = DSString.chars;
-  *chars = *temp;
-  delete[] temp;
+    chars = strdup(DSString.chars);
 }
 DSString::~DSString(){
     delete[] chars; chars = nullptr;
 }
 DSString& DSString::operator= (const char* cstring){
-    if(strlen(cstring)>length){
-        this->resize(strlen(cstring));
+    if (cstring != this->c_str()){
+        delete[] chars;
     }
-    strcpy(chars, cstring);\
+    chars = strdup(cstring);
     return *this;
 }
 DSString& DSString::operator= (const DSString& DSString){
-    if (this != &DSString){
-        char* temp = DSString.chars;
-        this->resize(DSString.length);
-        *chars = *temp;
-        delete[] temp; temp = nullptr;
-    }
+    chars = strdup(DSString.chars);
     return *this;
     //Tried to use copy constructor, some people do it the other way around
 }
 
 DSString DSString::operator+ (const DSString& DSString){
-   this->chars = strcat(chars, DSString.chars);
-   this->length = 0;
-   return *this; //returns dereferenced this pointer
+   std::cerr << "   OP+ ?";
+   char* temp; temp = new char[strlen(chars)+strlen(DSString.chars)+1];
+   strcat(temp, chars);
+   strcat(temp, DSString.chars);
+   delete[] chars;
+   chars = strdup(temp);
+   std::cerr << "   OP+ :)";
+   return *this; //returns dereferenced 'this' pointer
 }
 DSString DSString::operator+ (const char* cstring){
-   chars = new char[5000];
-   this->chars = strcat(chars, cstring);
-   this->length = 0;
+    std::cerr << "   OP+ ?";
+    char* temp;
+    temp = new char[strlen(chars)+strlen(cstring)+1];
+    strcat(temp, chars);
+    strcat(temp, cstring);
+    delete[] chars;
+    chars = strdup(temp);
+    std::cerr << "   OP+ :)";
    return *this; //returns dereferenced this pointer
 }
-DSString DSString::operator+ (const char achar){
-   this->chars = strcat(chars, ""+achar);
-   this->length = 0;
+/*DSString DSString::operator+ (const char achar){
+   strcat(chars, achar);
    return *this; //returns dereferenced this pointer
-}
+}*/
 
 bool DSString::operator== (const char* cstring){
     return strcmp(chars, cstring)==0;//Returns 0 if true
@@ -68,7 +62,7 @@ bool DSString::operator== (const DSString& DSString){
 }
 
 bool DSString::operator> (const DSString& DSString){ //Alphabetising
-   for (int i = 0; i < length; i++){
+   for (int i = 0; i < this->getLength(); i++){
         if (chars[i] > DSString.chars[i]){
             return true;
         }else if (chars[i] < DSString.chars[i]){
@@ -82,26 +76,33 @@ char& DSString::operator[] (const int length){
     this->chars = new char[length];
 }
 int DSString::getLength(){
-    return length;
+    //std::cerr << "getting length" <<std::endl;
+    int i = 0;
+    while (chars[i] != '\0'){
+        i++;
+    }
+    //std::cerr << "got length" <<std::endl;
+    return i;
 }
 DSString DSString::substring(int start, int numChars){
+    //std::cerr << "In substring" << std::endl;
+    //std::cerr << start << numChars;
+    //std::cerr << this->getLength();
     DSString substring;
-    for(start; start < length; start++){
-        substring.chars = strcat(substring.chars, (const char*)chars[start]);
+    substring.chars = new char[numChars+1];
+        //std::cerr << " substring ITERATION BEGINING" << std::endl;
+    for(int i = start; i < this->getLength() && i-start < numChars; i++){
+        //std::cerr << " ITERATION   substring" << std::endl;
+        substring.chars[i-start] = this->chars[i];
+        //substring = strcat(substring.chars, (char*) this->chars[i]);
     }
+    //std::cerr << "Exiting substring" << std::endl;
+    std::cerr<<this->c_str();
+    std::cerr<< substring.c_str();
     return substring;
 }
 char* DSString::c_str(){
     return chars;
-}
-
-void DSString::resize(int len){
-    //if (chars == nullptr){ chars = new char[len]; length = len; return;}
-    //char* temp = new char[length];
-    delete[] chars; //chars = nullptr;
-    length = len;
-    chars = new char[length+1];
-    //*chars = *temp;
 }
 
 /*friend std::ostream& operator<< (std::ostream&, const DSString&){

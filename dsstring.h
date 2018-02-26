@@ -8,6 +8,7 @@ class DSString
 private:
     char* chars;
     int length;
+
 public:
     DSString();
     DSString(const char*);

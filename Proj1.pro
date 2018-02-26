@@ -5,8 +5,10 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     dsstring.cpp \
-    readerfunctions.cpp
+    readerfunctions.cpp \
+    dsvector.cpp
 
 HEADERS += \
     dsstring.h \
-    main.h
+    main.h \
+    dsvector.h

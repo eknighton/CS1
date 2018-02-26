@@ -20,37 +20,55 @@ char* instr{nullptr}; //Global pointer to instruction filename
 
 
 
-void trainWord(DSString word){ cerr << word.c_str();
+void modifyWord(DSString word){
+
+}
+
+
+
+void trainWord(DSString word){
+   // cerr << "In trainWord" << endl;
+   //cerr << "Training: " << word.c_str();
 
     targetr = ifstream(targ);
     targetw = ofstream(targ);
-    char* temp;
+    char* temp = new char[10000];
+
+    //cerr << "  Variables Allocated" << endl;
     //Will now iterate though file, locating the word if it occurs.
-    for (int i = 0; i < 1000000; i++){
+    for (int i = 0; i < 10; i++){
         for (int k = 0; k < 10000; k++){
-            targetr.get(temp[i]);
-            if (temp[i] == '\n'){
+           // cerr << "First call to targetr.get" << endl;
+            targetr.get(temp[k]);
+            cerr << "temp" << k << temp[k] << " ";
+            if (temp[k] == '\n'){
                 delete[] temp;
-                temp=nullptr;
+                temp = new char[10000];
                 k = 10000;
             }
+            //cerr << "making comparison" << endl;
             if (temp == word.c_str()){
-                delete[] temp;
-                temp = nullptr;
+                cerr << "Word found";
                 for (int j = 0; j < 10000; j++){
                     targetr.get(temp[j]);
                     if (temp[j] == '\n'){
                        targetw<< sentiment << '\n'; //Will add sentiment value to line reader is on
+                       //cerr << "trainword complete (1)" << endl;
+                       delete[] temp;
                        return;
                     }
                 }
+                //cerr << "trainword complete (2)" << endl ;
+                delete[] temp;
                 return;
             }
         }
     }
     targetw << word.c_str() << sentiment << '\n'; //If the word is not found, it is added on the last line.
+    cerr << "trainword complete: not found, written" << word.c_str()<< endl;
     return;
 }
+
 void checkWord(DSString word){
     targetr = ifstream(targ);
     targetw = ofstream(targ);
@@ -59,8 +77,8 @@ void checkWord(DSString word){
     //Will now iterate though file, locating the word if it occurs.
     for (int i = 0; i < 1000000; i++){
         for (int k = 0; k < 10000; k++){
-            targetr.get(temp[i]);
-            if (temp[i] == '\n'){
+            targetr.get(temp[k]);
+            if (temp[k] == '\n'){
                 delete[] temp;
                 temp=nullptr;
                 k = 10000;
@@ -82,29 +100,35 @@ void checkWord(DSString word){
     }
     return;//No effect if not found.
 }
-
-void doTweet(DSString tweet){
-    char* ctweet = tweet.c_str();
+char* ctweet;
+void doTweet(DSString tweet){ //fix memory leaks
+    ctweet = tweet.c_str();
     //cerr << tweet.c_str();
-    cerr << "doword";
+    cerr << "In doTweet" << endl;
     for (int i = 0; i < 2000; i++){
         if (ctweet[i] == ' ' || ctweet[i] == ',' || ctweet[i] == '.' || ctweet[i] == '!' || ctweet[i] == '?' || ctweet[i] == ';' || ctweet[i] == ':' || ctweet[i] == '-' || ctweet[i] == '"'){//Finds first non member
             if (mode){ //Ladder runs appropriate function on word
                 checkWord(tweet.substring(0,i));
+                cerr << "wordchecked!" << endl;
             }else{
                 trainWord(tweet.substring(0,i));
+                //cerr << "wordtrained!" << endl;
             }
-            doTweet(tweet.substring(i+1,tweet.getLength()-(i+1))); //Make sure this line is right
-            delete[] ctweet;
+            //delete[] ctweet;
+            //cerr << "ctweet deleted[]!";
+            doTweet(tweet.substring(i,tweet.getLength()-(i))); //Make sure this line is right
             return;
         }
         if (ctweet[i] == '\n'){
             if (mode){ //Ladder runs appropriate function on word
                 checkWord(tweet.substring(0,i));
+                cerr << "wordchecked!" <<endl;
             }else{
                 trainWord(tweet.substring(0,i));
+                //cerr << "wordtrained!" <<endl;
             }
-            delete[] ctweet;
+            cerr << "endline mode!";
+            //delete[] ctweet;
             return;
         }
     }
@@ -112,6 +136,7 @@ void doTweet(DSString tweet){
 }
 char* cstring = new char[5000];
 DSString getNextTweet(){
+    cerr << "In getNextTweet!" << endl;
     char* temp = new char;
     DSString result;
     int commaCount = 0;
@@ -125,6 +150,7 @@ DSString getNextTweet(){
                    delete[] temp;
                     result =cstring;
                     cerr << result.c_str();
+                    cerr << "Returning!";
                    return result;
                  }
             }else if(*temp == ','){
@@ -132,12 +158,15 @@ DSString getNextTweet(){
             }else if(*temp == '\n'){
                 delete[] temp;
                 result =cstring;
-                 cerr << "nextTweet" << result.c_str();
+                 cerr << "nextTweet2";
+                 cerr << result.c_str() <<endl;
+                 cerr << "Returning!";
                return result;
             }
         }
     delete temp;
-         cerr << "nextTweet" << result.c_str();
+         cerr << "nextTweet3";
+         //cerr << result.c_str() <<endl;
     return result;// = "\n"; //Failure case.
 }
 int getNextRating(){
@@ -164,23 +193,30 @@ int getNextRating(){
 
 
 int train(char* argv[]){// TRAINER OP
+    cerr << "In Train!" << endl;
     //Training
     subject =ifstream(argv[2]); //Fstream is a more abstract
     targetr =ifstream(argv[3]);
     targetw =ofstream(argv[3]);//DO not open this with an fstream
+    cerr << "   Stream Assignment Step Done" << endl;
     subj = argv[2]; targ = argv[3];
+    cerr << "   Cstring Assignment Step Done" << endl;
     DSString DStemp(" ");
+    cerr << "   String Initiation Step Done" << endl;
     mode = false;
 
+    cerr << "   " << endl;
     if(!subject||!targetw){
         cerr << "Files not found!" << endl;
         return 0; }
     cerr << "Files found!" << endl;
     cerr << "Training!" << endl;
     getNextRating();
-    for (int a = 0; a < 10; a++){ //Iterates through tweets
-        DStemp = getNextTweet().c_str(); //Testing revealed that using the copy constructor or assignment operator corrupted the data.
-        cerr << "trainOut1" << getNextTweet().c_str()<< endl;
+    for (int a = 0; a < 100; a++){ //Iterates through tweets
+        //DStemp =
+        cerr << getNextTweet().c_str(); //Testing revealed that using the copy constructor or assignment operator corrupted the data.
+        cerr << "Got Tweet! @Train";
+        cerr << DStemp.c_str();
         sentiment = getNextRating();
         doTweet(DStemp);
     }
@@ -234,22 +270,4 @@ int main(int argc,  char* argv[])
     return 0;
 
 }
-
-
-//Find test.cpp file, this is supposed to be included -- Not expected to create a header file for test
-//Find catch.hpp - this is required for test 
-//These are not in repo bc SMU is bad
-
-//Should each terminal command be in a separate file?
-
-
-
-
-    //read from the file
-    //check if it is positive or negative
-
-    //iterate through the possibilities
-    //find connections between pieces
-    //avoid repeated operations, considertion
-    //try and determine what context is significant
 
