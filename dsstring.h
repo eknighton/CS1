@@ -22,8 +22,9 @@ public:
     bool operator== (const char*);
     bool operator== (const DSString&);
     bool operator> (const DSString&);
+    bool operator< (const DSString&);
     char& operator[] (const int);
-    int getLength();
+    const int getLength();
     DSString substring(int start, int numChars);
     char* c_str();
     void resize(int);

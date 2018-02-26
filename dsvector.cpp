@@ -1,4 +1,5 @@
 #include "dsvector.h"
+#include "dsstring.h"
 
 
 using namespace std;
@@ -13,7 +14,7 @@ DSvector<T>::DSvector()
 }
 template<typename T>
 DSvector<T>::DSvector(const DSvector<T>& parent){
-    length = parent.updateLength();
+    length = parent.length;
     contents = new T[length];
     contents = parent.contents;
 }
@@ -26,7 +27,7 @@ DSvector<T>::~DSvector(){
 template<typename T>
 int DSvector<T>::updateLength(){
     int i = 0;
-    while (contents[i]!= nullptr)
+    while (!(contents[i] == nullptr))
         i++;
     this->length = i;
     return i;
@@ -66,9 +67,9 @@ void DSvector<T>::insert(const T& insertion, int loc){
 }
 
 template<typename T>
-void DSvector<T>::sortedIn(const T& insertion){
+void DSvector<T>::sortedIn(const T& insertion){ //Highest to lowest
     for (int i = 0; i< length; i++){
-       if (contents[i] == nullptr || contents[i] <= insertion){
+       if (contents[i] == nullptr || contents[i] < insertion || contents[i] == insertion){
            insert(insertion, i);
            return;
        }
@@ -88,7 +89,7 @@ void DSvector<T>::append(const T& appendage){
 template<typename T>
 int DSvector<T>::search(const T& target){
     for (int i = 0; i< length; i++){
-        if (contents[i] != nullptr && contents[i] == target){
+        if (!(contents[i] == nullptr) && contents[i] == target){
             return i;
         }
     }
@@ -99,13 +100,21 @@ int DSvector<T>::search(const T& target){
 //Deletion methods
 template<typename T>
 void DSvector<T>::remove(int loc){
-    T tempOut; T tempIn = nullptr;
+    T tempOut; T tempIn; //Default constructor yields positive comparison to nullpointer
     for (int i = length; i > loc; i--){
         tempOut = contents[i];
         contents[i] = tempIn;
         tempIn = tempOut;
     }
     length-=1;
+}
+
+//Get methods
+template<typename T>
+T& DSvector<T>::get(int loc){
+    if(loc < length)
+        return contents[loc];
+    return contents[0];
 }
 
 

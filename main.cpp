@@ -2,7 +2,9 @@
 #include <fstream>
 #include <readerfunctions.cpp>
 #include <cstring>
+#include "dsvector.h"
 #include "dsstring.h"
+#include "wordvalpair.h"
 
 using namespace std;
 
@@ -18,10 +20,59 @@ char* subj{nullptr}; //Global pointer to subject filename
 char* targ{nullptr}; //Global pointer to target filename
 char* instr{nullptr}; //Global pointer to instruction filename
 
+DSvector<DSString> wordVec;
+DSvector<WordValPair> trainPairVec;
+DSvector<IDSentimentPair> testPairVec;
 
 
-void modifyWord(DSString word){
+void processWord(DSString word){
+    cerr << "word" << word.c_str() << endl;
+    int loc = wordVec.search(word);
+    if (loc > -1){
+        trainPairVec.get(loc).val+=sentiment;
 
+    }else{
+        WordValPair input; input.word = word; input.val = sentiment;
+        trainPairVec.sortedIn(input);
+    }
+
+}
+void ratingsLoad(){
+    targetr = ifstream(instr);
+    while(false){
+
+    }
+}
+
+int wordCheck(DSString word){
+
+}
+
+
+
+void writeTaughtVector(){
+    targetw = ofstream(targ);
+    targetw.open(targ);
+    for (int i = 0; i < trainPairVec.updateLength(); i++){
+        targetw << trainPairVec.get(i).word.c_str();
+        cerr<< trainPairVec.get(i).word.c_str();
+        targetw << " " << trainPairVec.get(i).val;
+        targetw << endl;
+    }
+    targetw.close();
+
+}
+void writeTestVector(){
+    targetw = ofstream(targ);
+    for (int i = 0; i < testPairVec.updateLength(); i++){
+        targetw << testPairVec.get(i).ID.c_str();
+        if (testPairVec.get(i).sentiment > 0){
+            targetw << '"'<< 4 << '"';
+        }else{
+             targetw << '"'<< 0 << '"';
+        }
+        targetw << endl;
+    }
 }
 
 
@@ -111,8 +162,8 @@ void doTweet(DSString tweet){ //fix memory leaks
                 checkWord(tweet.substring(0,i));
                 cerr << "wordchecked!" << endl;
             }else{
-                trainWord(tweet.substring(0,i));
-                //cerr << "wordtrained!" << endl;
+                processWord(tweet.substring(0,i));
+                cerr << "wordtrained!" << endl;
             }
             //delete[] ctweet;
             //cerr << "ctweet deleted[]!";
@@ -124,8 +175,8 @@ void doTweet(DSString tweet){ //fix memory leaks
                 checkWord(tweet.substring(0,i));
                 cerr << "wordchecked!" <<endl;
             }else{
-                trainWord(tweet.substring(0,i));
-                //cerr << "wordtrained!" <<endl;
+                processWord(tweet.substring(0,i));
+                cerr << "wordtrained!" <<endl;
             }
             cerr << "endline mode!";
             //delete[] ctweet;
@@ -135,36 +186,40 @@ void doTweet(DSString tweet){ //fix memory leaks
 
 }
 char* cstring = new char[5000];
+char* temp = new char[200];
+
+
+
+DSString getNextTweetTwo(int line){
+
+}
+
 DSString getNextTweet(){
     cerr << "In getNextTweet!" << endl;
-    char* temp = new char;
+    delete[] temp;
+    delete[] cstring;
+    cstring = new char[50000];
+    temp = new char[200];
     DSString result;
     int commaCount = 0;
-        for (int i = 0; i < 2048; i++){
+        for (int i = 0; i < 1024; i++){
         /*Loop will stop when it hits end of line char*/
-            subject.get(*temp);
+            cerr<< "temp: " << temp[0];
+            subject.get(temp[0]);
             if (commaCount == 3){
             /*Now in tweet. Comma count ceases. Concatnation to return value initiated.*/
                  strcat(cstring, temp);
-                 if (*temp == '\n'){
-                   delete[] temp;
-                    result =cstring;
-                    cerr << result.c_str();
-                    cerr << "Returning!";
+                 if (temp[0] == '\n'){
+                   result =cstring;
                    return result;
                  }
-            }else if(*temp == ','){
+            }else if(temp[0] == ','){
                 commaCount++;
-            }else if(*temp == '\n'){
-                delete[] temp;
-                result =cstring;
-                 cerr << "nextTweet2";
-                 cerr << result.c_str() <<endl;
-                 cerr << "Returning!";
+            }else if(temp [0]== '\n'){
+               result =cstring;
                return result;
             }
         }
-    delete temp;
          cerr << "nextTweet3";
          //cerr << result.c_str() <<endl;
     return result;// = "\n"; //Failure case.
@@ -190,8 +245,6 @@ int getNextRating(){
     return result; //Failure case.
 }
 
-
-
 int train(char* argv[]){// TRAINER OP
     cerr << "In Train!" << endl;
     //Training
@@ -212,15 +265,20 @@ int train(char* argv[]){// TRAINER OP
     cerr << "Files found!" << endl;
     cerr << "Training!" << endl;
     getNextRating();
-    for (int a = 0; a < 100; a++){ //Iterates through tweets
-        //DStemp =
-        cerr << getNextTweet().c_str(); //Testing revealed that using the copy constructor or assignment operator corrupted the data.
-        cerr << "Got Tweet! @Train";
-        cerr << DStemp.c_str();
+    for (int a = 0; a < 3; a++){ //Iterates through tweets
+        DStemp = getNextTweet().c_str();
+        cerr << "Tweet: ";
+        cerr << DStemp.c_str() << endl;
+        cerr << "Got Tweet!"<< endl;
         sentiment = getNextRating();
-        doTweet(DStemp);
+        cerr << "sentiment: " << sentiment << endl;
+        //doTweet(DStemp);
     }
+    writeTaughtVector();
     delete[] cstring;
+    subject.close();
+    targetr.close();
+    targetw.close();
     return 0;
 }
 int test(char* argv[]){// TESTER OP
@@ -249,8 +307,19 @@ int test(char* argv[]){// TESTER OP
 }
 
 
+
+
 int main(int argc,  char* argv[])
 {
+    DSString TESTER = "HEYOBAYO";
+    cerr << TESTER.getLength() <<endl;
+    cerr << TESTER.substring(0,2).c_str() <<endl;
+    DSString TESTY= DSString("WOOO");
+    cerr << TESTY.substring(0,2).c_str() <<endl;
+    TESTER = TESTY;TESTER = TESTY;TESTER = TESTY;TESTER = TESTY;
+    cerr << TESTER.substring(0,2).c_str() <<endl;
+    cerr << DSString("WOO").c_str() << endl;
+
     cerr << "Starting! "<< argc << " argument(s)!" <<endl;
     if (argc < 4){
         cerr << "-r/-c and <subject> <target> required" << endl;

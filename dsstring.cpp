@@ -70,12 +70,21 @@ bool DSString::operator> (const DSString& DSString){ //Alphabetising
         }
    }
 }
+bool DSString::operator< (const DSString& DSString){ //Alphabetising
+   for (int i = 0; i < this->getLength(); i++){
+        if (chars[i] > DSString.chars[i]){
+            return false;
+        }else if (chars[i] < DSString.chars[i]){
+            return true;
+        }
+   }
+}
 
 char& DSString::operator[] (const int length){
     delete[] chars;
     this->chars = new char[length];
 }
-int DSString::getLength(){
+const int DSString::getLength(){
     //std::cerr << "getting length" <<std::endl;
     int i = 0;
     while (chars[i] != '\0'){
@@ -92,13 +101,10 @@ DSString DSString::substring(int start, int numChars){
     substring.chars = new char[numChars+1];
         //std::cerr << " substring ITERATION BEGINING" << std::endl;
     for(int i = start; i < this->getLength() && i-start < numChars; i++){
-        //std::cerr << " ITERATION   substring" << std::endl;
         substring.chars[i-start] = this->chars[i];
         //substring = strcat(substring.chars, (char*) this->chars[i]);
     }
     //std::cerr << "Exiting substring" << std::endl;
-    std::cerr<<this->c_str();
-    std::cerr<< substring.c_str();
     return substring;
 }
 char* DSString::c_str(){

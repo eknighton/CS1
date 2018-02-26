@@ -6,9 +6,11 @@ CONFIG -= qt
 SOURCES += main.cpp \
     dsstring.cpp \
     readerfunctions.cpp \
-    dsvector.cpp
+    dsvector.cpp \
+    wordvalpair.cpp
 
 HEADERS += \
     dsstring.h \
     main.h \
-    dsvector.h
+    dsvector.h \
+    wordvalpair.h

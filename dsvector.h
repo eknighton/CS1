@@ -1,6 +1,9 @@
 #ifndef DSVECTOR_H
 #define DSVECTOR_H
 
+#include "dsstring.h"
+#include "wordvalpair.h"
+
 template <typename T> class DSvector
 {
 private:
@@ -24,7 +27,12 @@ public:
     int search(const T&);//-1 if not found
     //Deletion
     void remove(int);
+    //Retrieval
+    T& get(int);
 
 };
+template class DSvector<DSString>;
+template class DSvector<WordValPair>;
+template class DSvector<IDSentimentPair>;
 
 #endif // DSVECTOR_H
